@@ -32,7 +32,12 @@ NC='\033[0m'
 IGNORE="'performance_schema' 'information_schema' "
 
 mysqlDump() {
-  [ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
+	if [ "$(id -u)" != "0" ]; then
+		echo "This script must be run as root" 1>&2
+		echo "use ${RED}'sudo !!'${NC}"
+		exit 1
+	fi
+
   MYSQLDUMPOPTIONS="--add-drop-database --add-drop-table -E -c --single-transaction"
   [ ! -d $MBD ] && sudo mkdir -p $MBD||:
   $CHOWN $IDUSER.$IDUSERGROUP -R $DESTMYSQL
@@ -68,7 +73,11 @@ mysqlDump() {
 }
 
 rsyncTO(){
-  [ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
+  if [ "$(id -u)" != "0" ]; then
+		echo "This script must be run as root" 1>&2
+		echo "use ${RED}'sudo !!'${NC}"
+		exit 1
+  fi
 
   if [ "$KEY" != ""];
   	then
@@ -79,7 +88,11 @@ rsyncTO(){
 }
 
 varDump(){
-  [ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
+  if [ "$(id -u)" != "0" ]; then
+		echo "This script must be run as root" 1>&2
+		echo "use ${RED}'sudo !!'${NC}"
+		exit 1
+  fi
 
   [ ! -d $VARD ] && sudo mkdir -p $VARD||:
 
@@ -101,7 +114,7 @@ Options:
 EOF
 }
 
-if ! options=$(getopt -o i:mthv -l mysql,toserver,help,var: -n "backup.sh" -- "$@")
+if ! options=$(getopt -o i:mthw -l mysql,toserver,help,www: -n "backup.sh" -- "$@")
 then
     exit 1
 fi
