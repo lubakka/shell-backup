@@ -90,7 +90,7 @@ rsyncTO(){
   fi
 }
 
-varDump(){
+webRoot(){
   if [ "$(id -u)" != "0" ]; then
 		echo "This script must be run as root" 1>&2
 		echo "use ${RED}'sudo !!'${NC}"
@@ -109,11 +109,11 @@ usage() {
 cat <<EOF
 Usage: $0 <[options]>
 Options:
-        -i "databases"               Set which ignore databases.
-        -m     --mysql               Backup mysql all databases.
-        -h     --help                Show this message
-        -t     --toserver            Sync file to server
-        -w 	   --www				 Backup this directory "/var/www" default
+        -i "databases" -m                Set which ignore databases.
+        -m,              --mysql               Backup mysql all databases.
+        -h,              --help                Show this message
+        -t,              --toserver            Sync file to server
+        -w,              --www                 Backup this directory "/var/www" default
 EOF
 }
 
@@ -128,7 +128,7 @@ do
   case "$1" in
       -i) IGNORE="$IGNORE$2" ;;
       -m|--mysql) mysqlDump ;;
-	    -w|--www) varDump ;;
+	  -w|--www) webRoot ;;
       -t|--toserver) rsyncTO ;;
       -h|--help) usage exit ;;
       --) shift; break;;
