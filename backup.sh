@@ -7,9 +7,12 @@ SSHUSER="lubakka"
 BACKUPSERVER="192.168.1.132"
 BACKUPSERVERPATH="/BACKUP"
 KEY="/home/lubakka/.ssh/id_rsa"
-DESTMYSQL="/BACKUP/MySQL"
+BACKUPDIR="/BACKUP"
 VAR="/var/www"
-DESTVAR="/BACKUP/VAR"
+
+DESTMYSQL="$BACKUPDIR/MySQL"
+DESTVAR="$BACKUPDIR/VAR"
+
 SSH="$(which ssh)"
 MYSQL="$(which mysql)"
 MYSQLDUMP="$(which mysqldump)"
@@ -79,11 +82,11 @@ rsyncTO(){
 		exit 1
   fi
 
-  if [ "$KEY" != ""];
+  if [ $KEY ]
   	then
-  		rsync -e "$SSH -i $KEY" -avzp  --progress --recursive --relative $DESTMYSQL $SSHUSER@$BACKUPSERVER:$BACKUPSERVERPATH
+  		rsync -e "$SSH -i $KEY" -avzp  --progress --recursive --relative $BACKUPDIR $SSHUSER@$BACKUPSERVER:$BACKUPSERVERPATH
   	else
-  		echo "${RED}Variable 'KEY' is required!${NC}"
+  		echo "${RED}Variable 'KEY' is required, you must enter path to 'id_rsa'!${NC}"
   fi
 }
 
@@ -125,9 +128,9 @@ do
   case "$1" in
       -i) IGNORE="$IGNORE$2" ;;
       -m|--mysql) mysqlDump ;;
+	    -w|--www) varDump ;;
       -t|--toserver) rsyncTO ;;
       -h|--help) usage exit ;;
-	  -w|--www) varDump ;;
       --) shift; break;;
       -*) echo "${RED}$0: error - unrecognized option $1${NC}" 1>&2; exit 1;;
       *) usage break exit 1;;
